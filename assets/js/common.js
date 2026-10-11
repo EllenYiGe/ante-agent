@@ -13,7 +13,7 @@
   } catch (e) {
   }
   window.renderNav = function() {
-    var links = [["#demo", "Demo"], ["#results", "Results"], ["#method", "Approach"], ["#cases", "Case Studies"], ["#bib", "Cite"]];
+    var links = [["#demo", "Highlight"], ["#results", "Results"], ["#method", "Approach"], ["#cases", "Case Studies"], ["#cite", "Cite"]];
     var el = document.createElement("header");
     el.className = "nav";
     el.innerHTML = '<div class="wrap"><a class="brand" href="#top" aria-label="ANTE"><img src="img/icons/policy_agent_1.png" alt=""><span class="bt">ANTE</span></a><nav class="menu">' + links.map(function(l) {
@@ -28,35 +28,90 @@
     if (document.documentElement.getAttribute("data-variant") !== "b") return;
     var hs = Array.from(document.querySelectorAll("main section.part > h2"));
     if (hs.length < 2) return;
+    var COL = { "Highlight": ["#E08A3C", "var(--butter)"], "Results": ["#6B6FD6", "var(--lilac)"], "Approach": ["#3E9C7A", "var(--mint)"], "Case Studies": ["#D9707D", "var(--blush)"], "Cite": ["#6B7A99", "var(--mist)"] };
+    var items = hs.map(function(h, i) {
+      var sec = h.closest("section");
+      if (!sec.id) sec.id = "s" + i;
+      return [sec.id, (h.dataset.toc || h.textContent).replace(/\s*(§[\d.]+|App\. [A-Z][\d.]*)\s*$/, "").replace(/\s+[a-z_]+__[a-z_]+-\d+.*$/, "")];
+    });
+    if (document.getElementById("cite")) items.push(["cite", "Cite"]);
+    hs.forEach(function(h) {
+      var k = h.dataset.toc;
+      if (!k || h.previousElementSibling && h.previousElementSibling.classList.contains("sec-chip")) return;
+      var c = document.createElement("p");
+      c.className = "sec-chip";
+      c.style.setProperty("--dot", (COL[k] || ["#8A90A0"])[0]);
+      c.innerHTML = "<i></i>" + esc(k);
+      h.parentNode.insertBefore(c, h);
+    });
+    hs.forEach(function(h) {
+      var k = h.dataset.toc;
+      if (k) h.closest("section").style.setProperty("--sec", (COL[k] || ["#8A90A0"])[0]);
+    });
     var toc = document.createElement("nav");
     toc.className = "toc";
     toc.setAttribute("aria-label", "On this page");
-    toc.innerHTML = '<div class="t">On this page</div>' + hs.map(function(h, i) {
-      var sec = h.closest("section");
-      if (!sec.id) sec.id = "s" + i;
-      return '<a href="#' + sec.id + '">' + h.textContent.replace(/\s*(§[\d.]+|App\. [A-Z][\d.]*)\s*$/, "").replace(/\s+[a-z_]+__[a-z_]+-\d+.*$/, "") + "</a>";
+    toc.innerHTML = '<div class="toc-line" aria-hidden="true"><i class="toc-fill"></i></div>' + items.map(function(x) {
+      var c = COL[x[1]] || ["#8A90A0", "var(--mist)"];
+      return '<a href="#' + x[0] + '" data-label="' + esc(x[1]) + '" style="--dot:' + c[0] + '"><i class="toc-node"></i><span class="toc-lab">' + esc(x[1]) + "</span></a>";
     }).join("");
     document.body.appendChild(toc);
     var links = Array.from(toc.querySelectorAll("a")), secs = links.map(function(a) {
       return document.getElementById(a.getAttribute("href").slice(1));
-    });
+    }), line = toc.querySelector(".toc-line"), fill = toc.querySelector(".toc-fill");
+    function place() {
+      var n0 = links[0].querySelector(".toc-node"), n1 = links[links.length - 1].querySelector(".toc-node");
+      var y0 = links[0].offsetTop + n0.offsetTop + n0.offsetHeight / 2, y1 = links[links.length - 1].offsetTop + n1.offsetTop + n1.offsetHeight / 2;
+      line.style.top = y0 + "px";
+      line.style.height = Math.max(0, y1 - y0) + "px";
+    }
     function mark() {
-      var k = 0;
+      var k = 0, mid = window.innerHeight * 0.35;
       secs.forEach(function(s, i) {
-        if (s && s.getBoundingClientRect().top <= 140) k = i;
+        if (s && s.getBoundingClientRect().top <= 160) k = i;
       });
+      var atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      if (atEnd) k = secs.length - 1;
       links.forEach(function(a, i) {
         a.classList.toggle("on", i === k);
+        a.classList.toggle("past", i < k);
       });
+      var t0 = secs[0].getBoundingClientRect().top, tn = secs[secs.length - 1].getBoundingClientRect().top, f = atEnd ? 1 : (mid - t0) / Math.max(1, tn - t0);
+      fill.style.transform = "scaleY(" + Math.max(0, Math.min(1, f)).toFixed(4) + ")";
     }
+    place();
+    window.addEventListener("resize", place);
     window.addEventListener("scroll", mark, { passive: true });
     mark();
   };
+  window.keepTerms = function(root) {
+    var RX = /\b(?:ANTE-(?:TTO|SFT|RL)|SWE-bench|Terminal-Bench|Reactive-RL|Retrospective-RL|TTS-\d+|Qwen3(?:\.5)?-\d+(?:\.\d+)?B|R2E-Gym|[Tt]est-time)\b/g, SKIP = "code,pre,svg,script,style,textarea,.katex,.nw";
+    var w = document.createTreeWalker(root || document.body, NodeFilter.SHOW_TEXT, { acceptNode: function(n) {
+      RX.lastIndex = 0;
+      return n.parentElement && !n.parentElement.closest(SKIP) && RX.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    } }), nodes = [];
+    while (w.nextNode()) nodes.push(w.currentNode);
+    nodes.forEach(function(n) {
+      var t = n.nodeValue, f = document.createDocumentFragment(), last = 0, m;
+      RX.lastIndex = 0;
+      while (m = RX.exec(t)) {
+        if (m.index > last) f.appendChild(document.createTextNode(t.slice(last, m.index)));
+        var sp = document.createElement("span");
+        sp.className = "nw";
+        sp.textContent = m[0];
+        f.appendChild(sp);
+        last = m.index + m[0].length;
+      }
+      if (last < t.length) f.appendChild(document.createTextNode(t.slice(last)));
+      n.parentNode.replaceChild(f, n);
+    });
+  };
   window.renderFooter = function() {
-    renderToc();
     var f = document.createElement("footer");
-    f.innerHTML = '<div class="wrap"><div class="fr"><div style="flex:1;min-width:260px"><div>Contact: ' + A.emails.map(esc).join(" \xB7 ") + '</div><div style="margin-top:4px">' + esc(A.affiliations["1"]) + " \xB7 " + esc(A.affiliations["2"]) + '</div><div class="bibhead"><span>Citation</span><button type="button" class="btn small" onclick="copyBib(this)">Copy BibTeX</button></div><code class="bib" id="bib">' + esc(A.bibtex) + '</code></div><img class="aws" src="img/aws-logo.png" alt="AWS"></div></div>';
+    f.id = "cite";
+    f.innerHTML = '<div class="wrap"><div class="cite-panel"><p class="sec-chip" style="--dot:#6B7A99"><i></i>Cite</p><div class="fr"><div style="flex:1;min-width:260px"><div>Contact: ' + A.emails.map(esc).join(" \xB7 ") + '</div><div style="margin-top:4px">' + esc(A.affiliations["1"]) + " \xB7 " + esc(A.affiliations["2"]) + '</div><div class="bibhead"><span>Citation</span><button type="button" class="btn small" onclick="copyBib(this)">Copy BibTeX</button></div><code class="bib" id="bib">' + esc(A.bibtex) + '</code></div><img class="aws" src="img/aws-logo.png" alt="AWS"></div></div></div>';
     document.body.appendChild(f);
+    renderToc();
   };
   window.authorsHTML = function() {
     var au = A.authors.map(function(a) {
@@ -109,8 +164,14 @@
   var REF = /\s*\((?:(?:Sections?|Tables?|Figures?|Appendix|Appendices|Eqs?\.|Algorithms?|Propositions?|Corollar(?:y|ies)|Lemmas?)\s*[\dA-Z][\w.]*(?:\s*(?:,|and|;)\s*)?)+\)/g;
   var EDITS = [
     ["ANTE-TTO across the two harnesses.", "ANTE-TTO across the different harnesses."],
-    ["What changes is exactly what Figure 5 tracks in aggregate: the forecast's hit rate against the executed check.", "What changes is the forecast's hit rate against the executed check."],
-    ["and the traces in Appendix O.5 show the foresight also works outside the harness.", "and the traces below show the foresight also works outside the harness."],
+    ["What changes is exactly what Figure 5 tracks in aggregate: the forecast's hit rate against the executed check.", "After RL, the forecast matches the check, and the task is resolved in 26 steps."],
+    ["The same task (<code>sphinx-doc__sphinx-8721</code>) is attempted by the fine-tuned start and by the model after RL.", "As shown in the case of <code>sphinx-doc__sphinx-8721</code>, before RL the forecast misses the executed check twice, and the task remains unresolved after 41 steps."],
+    ["<b>The world model sharpens and the trust decision is learned.</b>", "<b>The world model's reasoning ability is reinforced and the trust decision is learned.</b>"],
+    ["and the traces in Appendix N.5 show the foresight also works outside the harness.", "and the traces in Case Studies show the foresight also works outside the harness."],
+    [" Since the run exits cleanly and the check fails as forecast, the step is a conclusive hit scored \\(+\\alpha\\).", ""],
+    ["In this case, uploading a file", "Uploading a file"],
+    [" (full trace in Appendix N)", ""],
+    ["This section provides one episode for each failure mode", "We show one episode for each failure mode"],
     ["; Figure 14 traces the two interventions end to end.", "."],
     ["The gains of Table 3 come from", "These gains come from"],
     ["Protocol of Table 3.", "Protocol."],
@@ -199,7 +260,7 @@
       }
     }
   };
-  var SMALL = { a: 1, an: 1, the: 1, and: 1, but: 1, or: 1, nor: 1, for: 1, so: 1, yet: 1, as: 1, at: 1, by: 1, in: 1, of: 1, on: 1, to: 1, up: 1, off: 1, vs: 1, its: 1, is: 1 };
+  var SMALL = { a: 1, an: 1, the: 1, and: 1, but: 1, or: 1, nor: 1, for: 1, so: 1, yet: 1, as: 1, at: 1, by: 1, in: 1, of: 1, on: 1, to: 1, up: 1, off: 1, vs: 1, its: 1 };
   window.tcase = function(t) {
     var words = String(t).split(" "), n = words.length, afterColon = true;
     return words.map(function(w, i) {

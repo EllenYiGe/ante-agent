@@ -22,7 +22,7 @@
   window.renderLanes = function(el) {
     var F = window.ANTE.fig6_case, n = F.beats.length, b = window.STATIC ? n : 0, timer = null, started = false, reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var lead = F.par.split(/(?<=\.)\s+(?=[A-Z])/).filter(function(s) {
-      return !/^follows one issue/.test(s);
+      return !/^(follows one issue|shows how the three models)/.test(s);
     }).join(" ");
     var head = '<div class="ln-task"><img src="' + I + 'repo_task_1.png" alt=""><div><div class="ln-title">' + esc(F.title) + '</div><div class="ln-head">' + F.header.map(function(h) {
       return h.role === "muted" ? esc(h.text) : '<code class="' + h.role + '">' + esc(h.text) + "</code>";

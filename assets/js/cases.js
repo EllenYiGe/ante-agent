@@ -26,7 +26,10 @@ window.renderCaseStudies = function(main) {
     if (it.type === "belief") return beliefCard(it.text);
     if (it.type === "memory") return '<div class="memory">' + esc(it.text) + "</div>";
     if (it.type === "obs") return '<div class="obs">' + esc(it.text) + "</div>";
-    if (it.type === "call") return '<div class="call">' + esc(it.text.replace(/&lt;/g, "<").replace(/&gt;/g, ">")) + "</div>";
+    if (it.type === "call") {
+      var v = it.text.split("\\(\\Rightarrow\\)");
+      return '<div class="call">' + esc(v[0].replace(/&lt;/g, "<").replace(/&gt;/g, ">")) + (v.length > 1 ? "\\(\\Rightarrow\\) " + v.slice(1).join("").trim() : "") + "</div>";
+    }
     if (it.type === "none") return '<div class="obs">' + esc(it.text || "no output") + "</div>";
     return '<p class="note">' + it.html + "</p>";
   }
@@ -38,7 +41,7 @@ window.renderCaseStudies = function(main) {
       return "<p>" + caption2(siteEdit(p)) + "</p>";
     }).join("") + "</div>" + (c.blocks.length > 1 ? '<div class="playbar"><button type="button" data-act="prev">\u25C0 Previous</button><button type="button" data-act="next">Next Step \u25B6</button><button type="button" data-act="all">Show All</button><span class="caption" style="margin:0" data-role="pos"></span></div><div class="steps">' + c.blocks.map(block).join("") + "</div>" : c.blocks.length ? '<div class="steps">' + c.blocks.map(block).join("") + "</div>" : "");
   }
-  var order = [0, 2, 1, 3, 4];
+  var order = [0, 1, 3, 4];
   var tabs = order.map(function(oi, k) {
     return '<button type="button" data-p="o' + oi + '" aria-pressed="' + (k === 0) + '"><span>' + (k + 1) + "</span>" + tcase(O[oi].title) + "</button>";
   }).join("") + '<button type="button" data-p="fm" aria-pressed="false"><span>' + (order.length + 1) + "</span>" + tcase(FM.heading) + "</button>";
@@ -49,8 +52,8 @@ window.renderCaseStudies = function(main) {
     return '<button type="button" data-mode="' + j + '" aria-pressed="' + (j === 0) + '">' + tcase(m.para_title) + "</button>";
   }).join("") + "</div>" + FM.modes.map(function(m, j) {
     return '<div class="fm-host" data-j="' + j + '"' + (j ? " hidden" : "") + "></div>";
-  }).join("") + '<p class="caption">' + caption2(siteEdit(FM.caption)) + "</p></div>";
-  el.innerHTML = '<h2>Case Studies</h2><div class="casetabs">' + tabs + "</div>" + panels;
+  }).join("") + '<p class="caption">' + caption2(siteEdit(FM.intro)) + "</p></div>";
+  el.innerHTML = '<h2 data-toc="Case Studies">How foresight affects the outcome</h2><div class="casetabs">' + tabs + "</div>" + panels;
   var bar = el.querySelector(".casetabs");
   bar.addEventListener("click", function(e) {
     var b = e.target.closest("button");

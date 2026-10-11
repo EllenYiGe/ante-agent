@@ -7,4 +7,5 @@
   renderCaseStudies(main);
   renderFooter();
   renderMath();
+  keepTerms(document.body);
 })();

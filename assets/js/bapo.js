@@ -209,7 +209,7 @@
       el.querySelectorAll(".bapo-acts button").forEach(function(b) {
         b.setAttribute("aria-pressed", +b.dataset.act === act ? "true" : "false");
       });
-      document.getElementById("bapo-note").innerHTML = "<b>" + act + " \xB7 " + ACTS[act - 1][0] + ".</b> " + ACTS[act - 1][1] + '. <span class="bapo-hint">Click any conclusive step to follow its numbers; the replay pauses while you look.</span>';
+      document.getElementById("bapo-note").innerHTML = "<b>" + act + " \xB7 " + ACTS[act - 1][0] + ":</b> " + ACTS[act - 1][1] + '. <span class="bapo-hint">Click any conclusive step to follow its numbers; the replay pauses while you look.</span>';
       document.getElementById("bapo-left").innerHTML = left(sel);
       document.getElementById("bapo-right").innerHTML = right(sel);
       document.getElementById("bapo-card").innerHTML = card(sel);
