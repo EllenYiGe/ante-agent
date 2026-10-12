@@ -192,6 +192,11 @@ h1 small {
   white-space: nowrap;
   font-weight: 500;
 }
+@media (max-width:640px) {
+  .au-br {
+    display: none;
+  }
+}
 sup {
   font-size: .62em;
   color: var(--muted);
@@ -3721,7 +3726,7 @@ figure.paperfig img {
   }
 }
 .ideas {
-  padding: 120px 0 0;
+  padding: 96px 0 0;
 }
 .ideas > h2 {
   text-align: center;
@@ -3881,7 +3886,7 @@ figure.paperfig img {
     flex-wrap: wrap;
   }
   .ideas {
-    padding-top: 84px;
+    padding-top: 67px;
   }
   .ideas > h2 {
     font-size: 31px;
