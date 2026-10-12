@@ -309,7 +309,7 @@
   window.autoFold = function(id, redraw) {
     var d = document.getElementById(id);
     if (!d) return;
-    var f = { d: d, sum: d.querySelector("summary"), user: false };
+    var f = { d, sum: d.querySelector("summary"), user: false };
     f.sum.addEventListener("click", function() {
       f.user = true;
     });

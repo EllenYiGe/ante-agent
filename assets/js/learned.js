@@ -23,7 +23,7 @@ window.renderLearned = function(el) {
   el.className = "lr";
   el.innerHTML = '<div class="lr-bar"><div class="seg" id="lr-scale">' + ["7b", "14b", "32b"].map(function(s) {
     return '<button type="button" data-s="' + s + '" aria-pressed="' + (s === scale) + '">' + s.toUpperCase() + "</button>";
-  }).join("") + '</div><div class="lr-ctl"><button type="button" class="lr-play">Pause</button><input type="range" id="lr-range" min="0" max="0" value="0" aria-label="RL training step"><output id="lr-step"></output></div></div><div class="grid2" id="lr-fig5" style="gap:12px;margin-top:14px"></div><p class="caption" style="margin:10px 0 0">' + caption2(siteEdit(A.fig_captions["fig:hit"].text)) + " " + src("Figure " + A.fig_captions["fig:hit"].number) + '</p>';
+  }).join("") + '</div><div class="lr-ctl"><button type="button" class="lr-play">Pause</button><input type="range" id="lr-range" min="0" max="0" value="0" aria-label="RL training step"><output id="lr-step"></output></div></div><div class="grid2" id="lr-fig5" style="gap:12px;margin-top:14px"></div><p class="caption" style="margin:10px 0 0">' + caption2(siteEdit(A.fig_captions["fig:hit"].text)) + " " + src("Figure " + A.fig_captions["fig:hit"].number) + "</p>";
   var range = el.querySelector("#lr-range"), out = el.querySelector("#lr-step"), playBtn = el.querySelector(".lr-play");
   function drawCurves() {
     var box = el.querySelector("#lr-fig5");

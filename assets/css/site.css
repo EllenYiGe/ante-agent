@@ -132,7 +132,7 @@ nav.menu a {
 nav.menu a:hover {
   color: var(--ink);
 }
-nav.menu a[aria-current="location"] {
+nav.menu a[aria-current=location] {
   color: var(--ink);
   text-decoration: underline;
   text-decoration-thickness: 1.5px;
