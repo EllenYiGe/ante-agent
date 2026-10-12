@@ -39,9 +39,9 @@ window.renderCaseStudies = function(main) {
   function excerpts(c) {
     return '<div class="prose">' + c.intro.map(function(p) {
       return "<p>" + caption2(siteEdit(p)) + "</p>";
-    }).join("") + "</div>" + (c.blocks.length > 1 ? '<div class="playbar"><button type="button" data-act="prev">\u25C0 Previous</button><button type="button" data-act="next">Next Step \u25B6</button><button type="button" data-act="all">Show All</button><span class="caption" style="margin:0" data-role="pos"></span></div><div class="steps">' + c.blocks.map(block).join("") + "</div>" : c.blocks.length ? '<div class="steps">' + c.blocks.map(block).join("") + "</div>" : "");
+    }).join("") + "</div>" + (c.blocks.length > 1 ? '<div class="playbar"><button type="button" data-act="prev">\u25C0 Previous</button><button type="button" data-act="next">Next \u25B6</button><button type="button" data-act="all">Show All</button><span class="caption" style="margin:0" data-role="pos"></span></div><div class="steps">' + c.blocks.map(block).join("") + "</div>" : c.blocks.length ? '<div class="steps">' + c.blocks.map(block).join("") + "</div>" : "");
   }
-  var order = [0, 1, 3, 4];
+  var order = [1, 0, 3, 4];
   var tabs = order.map(function(oi, k) {
     return '<button type="button" data-p="o' + oi + '" aria-pressed="' + (k === 0) + '"><span>' + (k + 1) + "</span>" + tcase(O[oi].title) + "</button>";
   }).join("") + '<button type="button" data-p="fm" aria-pressed="false"><span>' + (order.length + 1) + "</span>" + tcase(FM.heading) + "</button>";

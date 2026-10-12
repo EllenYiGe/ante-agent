@@ -26,7 +26,7 @@
   };
   window.renderToc = function() {
     if (document.documentElement.getAttribute("data-variant") !== "b") return;
-    var hs = Array.from(document.querySelectorAll("main section.part > h2"));
+    var hs = Array.from(document.querySelectorAll("main section.part > h2, main section.part > .part-head > h2"));
     if (hs.length < 2) return;
     var COL = { "Highlight": ["#E08A3C", "var(--butter)"], "Results": ["#6B6FD6", "var(--lilac)"], "Approach": ["#3E9C7A", "var(--mint)"], "Case Studies": ["#D9707D", "var(--blush)"], "Cite": ["#6B7A99", "var(--mist)"] };
     var items = hs.map(function(h, i) {
@@ -58,7 +58,7 @@
     document.body.appendChild(toc);
     var links = Array.from(toc.querySelectorAll("a")), secs = links.map(function(a) {
       return document.getElementById(a.getAttribute("href").slice(1));
-    }), line = toc.querySelector(".toc-line"), fill = toc.querySelector(".toc-fill");
+    }), line = toc.querySelector(".toc-line"), fill = toc.querySelector(".toc-fill"), menu = Array.from(document.querySelectorAll("nav.menu a"));
     function place() {
       var n0 = links[0].querySelector(".toc-node"), n1 = links[links.length - 1].querySelector(".toc-node");
       var y0 = links[0].offsetTop + n0.offsetTop + n0.offsetHeight / 2, y1 = links[links.length - 1].offsetTop + n1.offsetTop + n1.offsetHeight / 2;
@@ -75,6 +75,15 @@
       links.forEach(function(a, i) {
         a.classList.toggle("on", i === k);
         a.classList.toggle("past", i < k);
+      });
+      var cur = secs[k] && (atEnd || secs[k].getBoundingClientRect().top <= 160) ? "#" + secs[k].id : "";
+      menu.forEach(function(a) {
+        if (a.getAttribute("href") !== cur) return a.removeAttribute("aria-current");
+        if (a.getAttribute("aria-current")) return;
+        a.setAttribute("aria-current", "location");
+        var m = a.parentNode, r = m.getBoundingClientRect(), q = a.getBoundingClientRect();
+        if (q.right > r.right) m.scrollBy({ left: q.right - r.right + 12, behavior: "smooth" });
+        else if (q.left < r.left) m.scrollBy({ left: q.left - r.left - 12, behavior: "smooth" });
       });
       var t0 = secs[0].getBoundingClientRect().top, tn = secs[secs.length - 1].getBoundingClientRect().top, f = atEnd ? 1 : (mid - t0) / Math.max(1, tn - t0);
       fill.style.transform = "scaleY(" + Math.max(0, Math.min(1, f)).toFixed(4) + ")";
@@ -283,4 +292,45 @@
     var m = String(s).match(/-?\d+(?:\.\d+)?/);
     return m ? parseFloat(m[0]) : NaN;
   };
+  var autos = [], autoT = null;
+  function onScrollFolds() {
+    clearTimeout(autoT);
+    autoT = setTimeout(function() {
+      var H = window.innerHeight, opened = false;
+      autos.forEach(function(f) {
+        var t = f.sum.getBoundingClientRect().top, near = t > 0 && t < H * 0.45;
+        if (f.d.open && near) opened = true;
+        if (f.user) return;
+        if (f.d.open && t > H * 0.6) f.d.open = false;
+        else if (!f.d.open && !opened && near) opened = f.d.open = true;
+      });
+    }, 180);
+  }
+  window.autoFold = function(id, redraw) {
+    var d = document.getElementById(id);
+    if (!d) return;
+    var f = { d: d, sum: d.querySelector("summary"), user: false };
+    f.sum.addEventListener("click", function() {
+      f.user = true;
+    });
+    if (redraw) d.addEventListener("toggle", function() {
+      if (d.open) redraw();
+    });
+    if (!autos.length && !window.STATIC) window.addEventListener("scroll", onScrollFolds, { passive: true });
+    autos.push(f);
+    if (location.hash === "#" + id) {
+      f.user = true;
+      d.open = true;
+    }
+  };
+  document.addEventListener("click", function(e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    autos.forEach(function(f) {
+      if ("#" + f.d.id === a.getAttribute("href")) {
+        f.user = true;
+        f.d.open = true;
+      }
+    });
+  }, true);
 })();

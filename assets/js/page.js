@@ -8,4 +8,5 @@
   renderFooter();
   renderMath();
   keepTerms(document.body);
+  initScreens();
 })();

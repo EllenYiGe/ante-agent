@@ -37,6 +37,9 @@ window.renderResults = function(main) {
   function qa(id, question, answer, chip) {
     return '<div id="r-' + id + '" class="qa sub-part"><h3>' + question + "</h3>" + (answer ? '<p class="answer">' + siteEdit(answer) + "</p>" : "");
   }
+  function foldQa(id, question, answer) {
+    return '<details id="r-' + id + '" class="qa sub-part fold"><summary><h3>' + question + "</h3></summary>" + (answer ? '<p class="answer">' + siteEdit(answer) + "</p>" : "");
+  }
   var ACC = "var(--ante)", GREY = ["#C9C3B6", "#B9B2A4", "#8FA7B4", "#7FB89A"];
   var T1 = A.tables.main.rows, T2 = A.tables.term.rows, T3 = A.tables.ood.rows;
   var TC = ["ANTE-TTO", "TTS-4", "TTS-8"], TCOL = { "ANTE-TTO": ACC, "TTS-4": "#8FA7B4", "TTS-8": "#B9B2A4" }, TSET = [];
@@ -97,7 +100,7 @@ window.renderResults = function(main) {
   var band = document.getElementById("statband");
   if (band) band.innerHTML = tiles;
   var host = document.createElement("div");
-  host.innerHTML = '<section id="results" class="part"><h2 data-toc="Results" class="sr-only">Results</h2>' + qa("belief", "Does the Internal Belief Help?", "", "\xA73.2") + '<div class="chartbox duo"><div class="legend duo-legend" id="t12legend"></div><div class="duo-grid"><div class="duo-pane"><div class="duo-head"><b>SWE-bench Verified</b></div><div id="t1chart"></div></div><div class="duo-pane"><div class="duo-head"><b>Terminal Bench</b></div><div id="t2chart"></div></div></div><p class="caption duo-cap">Error bars show the standard error over 3 evaluation runs of one checkpoint, for the rows run three times; the table below lists every number.</p></div><details class="paperfigs"><summary>Table: Main Results on SWE-bench Verified and Terminal Bench</summary>' + table(A.tables.main, { numFrom: 2 }) + table(A.tables.term, { numFrom: 1 }) + '</details><details class="paperfigs"><summary>Table: Performance Comparison on SWE-bench Verified and Terminal-Bench 2.0</summary>' + table(A.tables.sota, { numFrom: 4 }) + cap(A.tables.sota) + table(A.tables.termmarket, { numFrom: 4 }) + cap(A.tables.termmarket) + "</details></div>" + qa("bapo", "Does BAPO Help?", "", "\xA73.2") + '<div class="chartbox"><div class="chart-head"><div class="caption" style="margin:0">What BAPO adds on top of the belief state</div><div class="legend"><span><i style="background:#7FB89A"></i>ANTE (w/o BAPO)</span><span><i style="background:' + ACC + '"></i>ANTE</span></div></div><div id="bapochart"></div></div>' + (wobapo ? '<p class="caption">' + caption2(siteEdit(wobapo)) + "</p>" : "") + "</div>" + qa("ood", "Does the Foresight Transfer Across Harnesses and Domains?", sentence(A.ood_par, "ANTE leads on all datasets"), "\xA73.3") + '<div class="chartbox"><div class="chart-head"><div class="seg" id="t3seg"><button type="button" data-s="paper" aria-pressed="true">By Domain</button><button type="button" data-s="gain">By Gain</button></div><div class="legend"><span><i style="background:#B9B2A4"></i>Reactive-RL</span><span><i style="background:' + ACC + '"></i>ANTE-32B</span></div></div><div id="t3chart"></div></div></div>' + qa("tto", "What Does Test-Time Foresight Cost?", "On average, ANTE-TTO's marginal token cost is 1/" + mtcRatio("TTS-4") + " of TTS-4's and 1/" + mtcRatio("TTS-8") + " of TTS-8's: it resamples only at trigger steps, scores the candidates by the beliefs the policy emits, and executes the best candidate.", "\xA73.4") + '<div class="chartbox tc"><div class="legend duo-legend" id="tc-legend"></div><div class="duo-grid"><div class="duo-pane"><div class="duo-head"><b>Inference Tokens per Task</b></div><div id="mtc"></div><div id="tc-btok"></div></div><div class="duo-pane"><div class="duo-head"><b>Marginal Token Cost</b></div><div id="tc-mtc"></div><div id="tc-nmtc"></div></div></div><p class="caption duo-cap"><b>ANTE-TTO cost analysis.</b> TTS-\\(n\\): best-of-\\(n\\) sampling; \\(B_{\\mathrm{tok}}\\): inference tokens per task relative to one greedy attempt; \\(\\mathrm{MTC} = (B_{\\mathrm{tok}}{-}1)\\,T_{\\mathrm{base}}/\\Delta S\\): inference tokens spent per point of score gain, with \\(T_{\\mathrm{base}}\\) the tokens of one greedy run (dashed line) and \\(\\Delta S\\) the score gain; \\(\\mathrm{nMTC} = (B_{\\mathrm{tok}}{-}1)/\\Delta S\\): greedy attempts spent per point of score gain.</p></div></div></section>';
+  host.innerHTML = '<section id="results" class="part"><h2 data-toc="Results" class="sr-only">Results</h2>' + qa("belief", "Does Internal Belief Help?", "", "\xA73.2") + '<div class="chartbox duo"><div class="legend duo-legend" id="t12legend"></div><div class="duo-grid"><div class="duo-pane"><div class="duo-head"><b>SWE-bench Verified</b></div><div id="t1chart"></div></div><div class="duo-pane"><div class="duo-head"><b>Terminal Bench</b></div><div id="t2chart"></div></div></div><p class="caption duo-cap">Error bars show the standard error over 3 evaluation runs of one checkpoint, for the rows run three times; the table below lists every number.</p></div><details class="paperfigs" name="r-belief"><summary>Table: Main Results on SWE-bench Verified and Terminal Bench</summary>' + table(A.tables.main, { numFrom: 2 }) + table(A.tables.term, { numFrom: 1 }) + '</details><details class="paperfigs" name="r-belief"><summary>Table: Performance Comparison on SWE-bench Verified and Terminal-Bench 2.0</summary>' + table(A.tables.sota, { numFrom: 4 }) + cap(A.tables.sota) + table(A.tables.termmarket, { numFrom: 4 }) + cap(A.tables.termmarket) + '</details><details class="paperfigs" name="r-belief" id="r-bapo"><summary>Comparison: Does BAPO Help?</summary><div class="chartbox"><div class="chart-head"><div class="caption" style="margin:0">What BAPO adds on top of the belief state</div><div class="legend"><span><i style="background:#7FB89A"></i>ANTE (w/o BAPO)</span><span><i style="background:' + ACC + '"></i>ANTE</span></div></div><div id="bapochart"></div></div>' + (wobapo ? '<p class="caption">' + caption2(siteEdit(wobapo)) + "</p>" : "") + "</details></div>" + foldQa("ood", "Does the Foresight Transfer Across Harnesses and Domains?", sentence(A.ood_par, "ANTE leads on all datasets")) + '<div class="chartbox"><div class="chart-head"><div class="seg" id="t3seg"><button type="button" data-s="paper" aria-pressed="true">By Domain</button><button type="button" data-s="gain">By Gain</button></div><div class="legend"><span><i style="background:#B9B2A4"></i>Reactive-RL</span><span><i style="background:' + ACC + '"></i>ANTE-32B</span></div></div><div id="t3chart"></div></div></details>' + foldQa("tto", "What Does Test-Time Foresight Cost?", "On average, ANTE-TTO's marginal token cost is 1/" + mtcRatio("TTS-4") + " of TTS-4's and 1/" + mtcRatio("TTS-8") + " of TTS-8's: it resamples only at trigger steps, scores the candidates by the beliefs the policy emits, and executes the best candidate.") + '<div class="chartbox tc"><div class="legend duo-legend" id="tc-legend"></div><div class="duo-grid"><div class="duo-pane"><div class="duo-head"><b>Inference Tokens per Task</b></div><div id="mtc"></div><div id="tc-btok"></div></div><div class="duo-pane"><div class="duo-head"><b>Marginal Token Cost</b></div><div id="tc-mtc"></div><div id="tc-nmtc"></div></div></div><p class="caption duo-cap"><b>ANTE-TTO cost analysis.</b> TTS-\\(n\\): best-of-\\(n\\) sampling; \\(B_{\\mathrm{tok}}\\): inference tokens per task relative to one greedy attempt; \\(\\mathrm{MTC} = (B_{\\mathrm{tok}}{-}1)\\,T_{\\mathrm{base}}/\\Delta S\\): inference tokens spent per point of score gain, with \\(T_{\\mathrm{base}}\\) the tokens of one greedy run (dashed line) and \\(\\Delta S\\) the score gain; \\(\\mathrm{nMTC} = (B_{\\mathrm{tok}}{-}1)/\\Delta S\\): greedy attempts spent per point of score gain.</p></div></details></section>';
   function axisStyle(svg) {
     svg.selectAll(".domain,.tick line").style("stroke", "var(--line)");
     svg.selectAll(".tick text").style("font", "11px var(--body)").style("fill", "currentColor");
@@ -353,6 +356,16 @@ window.renderResults = function(main) {
     });
   }
   drawBapoGain();
+  var folds = [].slice.call(document.querySelectorAll('#r-belief details[name="r-belief"]'));
+  folds.forEach(function(d) {
+    d.addEventListener("toggle", function() {
+      if (!d.open) return;
+      folds.forEach(function(o) {
+        if (o !== d) o.open = false;
+      });
+      if (d.id === "r-bapo") drawBapoGain();
+    });
+  });
   function drawT3(order) {
     var el = document.getElementById("t3chart");
     if (!window.d3 || !el) return;
@@ -404,6 +417,10 @@ window.renderResults = function(main) {
     t3order = s;
     drawT3(s);
   });
+  autoFold("r-ood", function() {
+    drawT3(t3order);
+  });
+  autoFold("r-tto", drawMtc);
   function paneW() {
     var e = document.getElementById("t1chart");
     return e ? e.clientWidth : 0;

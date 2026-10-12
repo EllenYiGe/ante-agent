@@ -20,37 +20,10 @@ window.renderLearned = function(el) {
     var e = A.fig5_end && A.fig5_end[p];
     return e && e[scale] != null ? e[scale] : null;
   }
-  var c3 = A.cases_O[2], before = c3.blocks[0], after = c3.blocks[1];
-  function beliefOf(b) {
-    var it = b.items.filter(function(x) {
-      return x.type === "belief";
-    })[0];
-    if (!it) return null;
-    try {
-      return JSON.parse(it.text.replace(/^<belief_state>/, "").replace(/<\/belief_state>$/, ""));
-    } catch (e) {
-      return null;
-    }
-  }
-  function card(b, cls) {
-    var j = beliefOf(b), obs = [].concat.apply([], b.items.filter(function(x) {
-      return x.type === "obs";
-    }).map(function(x) {
-      return x.text.split("\n");
-    }));
-    var say = b.items.filter(function(x) {
-      return x.type === "text";
-    }).map(function(x) {
-      return x.html;
-    }).join(" ");
-    return '<div class="lr-card ' + cls + '"><div class="lr-head">' + capFirst(b.title) + "</div>" + (say ? '<p class="lr-say">' + say + "</p>" : "") + (j ? '<div class="fs-col fs-belief"><div class="fs-lab">Belief state, written before the action</div><p class="fs-sum">' + esc(j.state_summary) + '</p><div class="fs-chips"><span class="fs-chip ' + (j.predicted_outcome.target_test === "PASS" ? "pass" : j.predicted_outcome.target_test === "FAIL" ? "fail" : "na") + '">target_test = ' + esc(j.predicted_outcome.target_test) + '</span><span class="fs-chip ' + (j.predicted_outcome.exit_ok ? "pass" : "fail") + '">exit_ok = ' + j.predicted_outcome.exit_ok + '</span><span class="fs-chip dec ' + esc(j.decision) + '">decision: ' + esc(j.decision) + "</span></div></div>" : "") + (obs.length ? '<div class="fs-col lr-exec"><div class="fs-lab">Execution</div>' + obs.map(function(o) {
-      return '<code class="fs-out">' + esc(o) + "</code>";
-    }).join("") + "</div>" : "") + "</div>";
-  }
   el.className = "lr";
   el.innerHTML = '<div class="lr-bar"><div class="seg" id="lr-scale">' + ["7b", "14b", "32b"].map(function(s) {
     return '<button type="button" data-s="' + s + '" aria-pressed="' + (s === scale) + '">' + s.toUpperCase() + "</button>";
-  }).join("") + '</div><div class="lr-ctl"><button type="button" class="lr-play">Pause</button><input type="range" id="lr-range" min="0" max="0" value="0" aria-label="RL training step"><output id="lr-step"></output></div></div><div class="grid2" id="lr-fig5" style="gap:12px;margin-top:14px"></div><p class="caption" style="margin:10px 0 0">' + caption2(siteEdit(A.fig_captions["fig:hit"].text)) + " " + src("Figure " + A.fig_captions["fig:hit"].number) + '</p><div class="sub-part"><h3>' + tcase(c3.title) + '</h3><p class="answer">' + siteEdit(c3.intro.join(" ")) + '</p><div class="lr-pair">' + card(before, "before") + card(after, "after") + "</div></div>";
+  }).join("") + '</div><div class="lr-ctl"><button type="button" class="lr-play">Pause</button><input type="range" id="lr-range" min="0" max="0" value="0" aria-label="RL training step"><output id="lr-step"></output></div></div><div class="grid2" id="lr-fig5" style="gap:12px;margin-top:14px"></div><p class="caption" style="margin:10px 0 0">' + caption2(siteEdit(A.fig_captions["fig:hit"].text)) + " " + src("Figure " + A.fig_captions["fig:hit"].number) + '</p>';
   var range = el.querySelector("#lr-range"), out = el.querySelector("#lr-step"), playBtn = el.querySelector(".lr-play");
   function drawCurves() {
     var box = el.querySelector("#lr-fig5");
