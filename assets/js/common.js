@@ -123,9 +123,9 @@
     renderToc();
   };
   window.authorsHTML = function() {
-    var au = A.authors.map(function(a) {
-      return '<span class="au">' + esc(a.name) + "<sup>" + a.marks.join(",") + "</sup></span>";
-    }).join(", ");
+    var cut = Math.floor(A.authors.length / 2) - 1, au = A.authors.map(function(a, i) {
+      return '<span class="au">' + esc(a.name) + "<sup>" + a.marks.join(",") + "</sup></span>" + (i < A.authors.length - 1 ? ", " : "") + (i === cut ? '<br class="au-br">' : "");
+    }).join("");
     var aff = Object.keys(A.affiliations).map(function(k) {
       return "<sup>" + k + "</sup>" + esc(A.affiliations[k]);
     }).join(" &nbsp;\xB7&nbsp; ");
