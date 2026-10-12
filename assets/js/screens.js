@@ -31,6 +31,7 @@ window.initScreens = function() {
   window.addEventListener("load", schedule);
   if (reduce && reduce.addEventListener) reduce.addEventListener("change", schedule);
   update();
+  var PAUSE = 250;
   var parts = [].slice.call(document.querySelectorAll("section.part, footer .cite-panel")), gest = null, lastWheel = 0, holdT = null, touching = false, user = false, lastY = window.scrollY, dir = 0, alignT = null;
   function begin() {
     gest = { y: window.scrollY, held: false, stop: 0 };
@@ -69,16 +70,17 @@ window.initScreens = function() {
     if (!gest || !gest.held && now - lastWheel > 300) begin();
     lastWheel = now;
     user = true;
-    if (gest.held) release(300);
   }, { passive: true });
   window.addEventListener("touchstart", function() {
     touching = true;
     if (!gest || !gest.held) begin();
   }, { passive: true });
-  window.addEventListener("touchend", function() {
+  function touchDone() {
     touching = false;
     if (gest && gest.held) release(350);
-  }, { passive: true });
+  }
+  window.addEventListener("touchend", touchDone, { passive: true });
+  window.addEventListener("touchcancel", touchDone, { passive: true });
   window.addEventListener("keydown", function(e) {
     if (/^(PageDown| |ArrowDown)$/.test(e.key) && !e.target.closest("input,textarea,select,button,a,summary,[contenteditable]")) begin();
   });
@@ -104,7 +106,7 @@ window.initScreens = function() {
         gest.stop = y;
         root.style.overflow = "hidden";
         window.scrollTo({ top: y, behavior: "instant" });
-        release(400);
+        release(PAUSE);
         return;
       }
     }
