@@ -118,7 +118,11 @@
   window.renderFooter = function() {
     var f = document.createElement("footer");
     f.id = "cite";
-    f.innerHTML = '<div class="wrap"><div class="cite-panel"><p class="sec-chip" style="--dot:#6B7A99"><i></i>Cite</p><div class="fr"><div style="flex:1;min-width:260px"><div>Contact: ' + A.emails.map(esc).join(" \xB7 ") + '</div><div style="margin-top:4px">' + esc(A.affiliations["1"]) + " \xB7 " + esc(A.affiliations["2"]) + '</div><div class="bibhead"><span>Citation</span><button type="button" class="btn small" onclick="copyBib(this)">Copy BibTeX</button></div><code class="bib" id="bib">' + esc(A.bibtex) + '</code></div><img class="aws" src="img/aws-logo.png" alt="AWS"></div></div></div>';
+    var names = A.authors.map(function(a) {
+      return a.name;
+    }), ref = names.slice(0, -1).join(", ") + ", and " + names[names.length - 1] + ". <i>" + esc(A.title) + '</i>. arXiv preprint <a href="' + A.arxiv.abs + '" target="_blank" rel="noopener">arXiv:' + A.arxiv.id + "</a>, 2026.";
+    var bib = esc(A.bibtex).replace(/^(@\w+)\{([^,]+),/, '<span class="bt">$1</span>{<span class="bk">$2</span>,').replace(/^(\s+)(\w+)=/gm, '$1<span class="bf">$2</span>=');
+    f.innerHTML = '<div class="wrap"><div class="cite-panel"><p class="sec-chip" style="--dot:#6B7A99"><i></i>Cite</p><p class="cite-lead">If you find ANTE useful in your research, please cite our paper:</p><p class="cite-ref">' + ref + '</p><div class="bibcard"><div class="bibbar"><span>BibTeX</span><button type="button" class="btn small" onclick="copyBib(this)">Copy</button></div><pre class="bib" id="bib">' + bib + '</pre></div><div class="cite-foot"><div><div>Contact: ' + A.emails.map(esc).join(" \xB7 ") + "</div><div>" + esc(A.affiliations["1"]) + " \xB7 " + esc(A.affiliations["2"]) + '</div></div><img class="aws" src="img/aws-logo.png" alt="AWS"></div></div></div>';
     document.body.appendChild(f);
     renderToc();
   };

@@ -928,7 +928,7 @@ footer code.bib {
   color: var(--ink);
   margin-top: 10px;
 }
-footer img.aws {
+.cite-foot img.aws {
   width: 58px;
   opacity: .9;
 }
@@ -1800,6 +1800,81 @@ details.paperfigs summary {
 .btn.small {
   padding: 5px 12px;
   font-size: 12.5px;
+}
+.cite-lead {
+  max-width: calc(860px * var(--wscale));
+  margin: 6px auto 6px;
+  font: 500 17px/1.5 var(--body);
+  color: var(--ink);
+}
+.cite-ref {
+  max-width: calc(860px * var(--wscale));
+  margin: 0 auto 22px;
+  font: 400 15px/1.65 var(--body);
+  color: var(--muted);
+}
+.cite-ref i {
+  color: var(--ink);
+}
+.cite-ref a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.cite-ref a:hover {
+  text-decoration: underline;
+}
+.bibcard {
+  max-width: calc(860px * var(--wscale));
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  overflow: hidden;
+  box-shadow: 0 18px 40px -30px rgba(28, 31, 37, .4);
+}
+.bibbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px 8px 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg2);
+  font: 600 12px var(--body);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+pre.bib {
+  margin: 0;
+  padding: 18px 20px;
+  font: 13px/1.7 var(--mono);
+  color: var(--ink);
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+pre.bib .bt {
+  color: #9A4A36;
+  font-weight: 600;
+}
+pre.bib .bk {
+  color: #6B6FD6;
+}
+pre.bib .bf {
+  color: #3E9C7A;
+}
+.cite-foot {
+  max-width: calc(860px * var(--wscale));
+  margin: 26px auto 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--muted);
 }
 .bibhead {
   display: flex;
