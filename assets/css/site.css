@@ -247,6 +247,23 @@ sup {
   opacity: .45;
   pointer-events: none;
 }
+.btn .bi {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  fill: currentColor;
+}
+.btn .emo {
+  font-size: 15px;
+  line-height: 1;
+  flex: none;
+}
+.btn:not(.primary):hover {
+  border-color: var(--ink);
+}
+.btn.primary:hover {
+  opacity: .86;
+}
 .abstract {
   margin: 32px auto 0;
   max-width: calc(700px * var(--wscale));

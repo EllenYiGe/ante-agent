@@ -217,11 +217,13 @@
     });
   };
   window.copyBib = function(btn) {
-    var settled = false, label = btn.textContent;
+    var tgt = btn.querySelector(".lbl") || btn, settled = false, label = tgt.getAttribute("data-label") || tgt.textContent;
+    tgt.setAttribute("data-label", label);
     function say(t, ms) {
-      btn.textContent = t;
-      setTimeout(function() {
-        btn.textContent = label;
+      tgt.textContent = t;
+      clearTimeout(tgt._restore);
+      tgt._restore = setTimeout(function() {
+        tgt.textContent = label;
       }, ms);
     }
     function done() {
