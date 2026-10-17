@@ -128,7 +128,7 @@
   };
   window.authorsHTML = function() {
     var cut = Math.floor(A.authors.length / 2) - 1, au = A.authors.map(function(a, i) {
-      return '<span class="au">' + esc(a.name) + "<sup>" + a.marks.join(",") + "</sup></span>" + (i < A.authors.length - 1 ? ", " : "") + (i === cut ? '<br class="au-br">' : "");
+      return '<span class="au">' + (a.url ? '<a href="' + a.url + '" target="_blank" rel="noopener">' + esc(a.name) + "</a>" : esc(a.name)) + "<sup>" + a.marks.join(",") + "</sup></span>" + (i < A.authors.length - 1 ? ", " : "") + (i === cut ? '<br class="au-br">' : "");
     }).join("");
     var aff = Object.keys(A.affiliations).map(function(k) {
       return "<sup>" + k + "</sup>" + esc(A.affiliations[k]);

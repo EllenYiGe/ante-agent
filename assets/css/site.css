@@ -192,6 +192,17 @@ h1 small {
   white-space: nowrap;
   font-weight: 500;
 }
+.authors .au a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--b1);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.authors .au a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
 @media (max-width:640px) {
   .au-br {
     display: none;
